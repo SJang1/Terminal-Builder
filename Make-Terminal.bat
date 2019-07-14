@@ -13,17 +13,17 @@ if "%PROCESSOR_ARCHITECTURE%" == "AMD64" (
 if (%1) == () (
     echo Automactlly building release
     set _LAST_BUILD_CONF=Release
-    set Building="rel"
+    set Building=rel
 )
 if (%1) == (dbg) (
     echo Manually building debug
     set _LAST_BUILD_CONF=Debug
-    set Building="dbg"
+    set Building=dbg
 )
 if (%1) == (rel) (
     echo Manually building release
     set _LAST_BUILD_CONF=Release
-    set Building="rel"
+    set Building=rel
 )
 shift
 
