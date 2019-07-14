@@ -13,17 +13,17 @@ if "%PROCESSOR_ARCHITECTURE%" == "AMD64" (
 if (%1) == () (
     echo Automactlly building release
     set _LAST_BUILD_CONF=Release
-    set Building=rel
+    set Building="rel"
 )
 if (%1) == (dbg) (
     echo Manually building debug
     set _LAST_BUILD_CONF=Debug
-    set Building=dbg
+    set Building="dbg"
 )
 if (%1) == (rel) (
     echo Manually building release
     set _LAST_BUILD_CONF=Release
-    set Building=rel
+    set Building="rel"
 )
 shift
 
@@ -51,15 +51,17 @@ echo Open OpenConsole.sln with VS2019, Install the following workloads which VS 
 echo If you already did this, Skip it!
 pause
 
-.\tools\razzle.cmd %Building%
-bcz %Building%
+@echo on
+call .\tools\razzle.cmd %Building%
+call .\tools\bcz.cmd %Building%
+@echo off
 
-
-:choice_shortcut
 cls
+:choice_shortcut
 set /P c=Do you want to make a shortcut on desktop[Y/N]?
 if /I "%c%" EQU "Y" goto :short
 if /I "%c%" EQU "N" goto :pass_short
+goto :choice_shortcut
 
 :short
 rem C:\terminal\src\cascadia\CascadiaPackage\bin\x64\Release\WindowsTerminal.exe
