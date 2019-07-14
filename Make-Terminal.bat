@@ -102,6 +102,6 @@ IF "%shortcut_exist%" == "yes" (
 :exit
 echo.
 echo.
-echo press enter to exit
+echo press any key to exit
 pause >nul
 exit
