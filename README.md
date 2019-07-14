@@ -1,5 +1,5 @@
 # Windows Terminal builder
-Windows Terminal builder builds [windows terminal](https://github.com/microsoft/terminal) automactally.
+Windows Terminal builder builds [windows terminal](https://github.com/microsoft/terminal) (semi)automatically.
 
 ## Prerequirements
 All of the [Prerequirements on Windows Terminal](https://github.com/microsoft/terminal/blob/master/README.md#build-prerequisites)
