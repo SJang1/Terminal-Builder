@@ -99,4 +99,9 @@ IF "%shortcut_exist%" == "yes" (
     echo You can run Terminal at "C:\terminal\src\cascadia\CascadiaPackage\bin\%ARCH%\%_LAST_BUILD_CONF%\WindowsTerminal.exe"
 )
 
-pause
+:exit
+echo.
+echo.
+echo press enter to exit
+pause >nul
+exit
