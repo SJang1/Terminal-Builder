@@ -6,7 +6,7 @@ All of the [Prerequirements on Windows Terminal](https://github.com/microsoft/te
 
 ..But I'll notify you when to do this : Opening the solution will [prompt you to install missing components automatically](https://devblogs.microsoft.com/setup/configure-visual-studio-across-your-organization-with-vsconfig/).
 
-p.s.) You can use Visual Studio 2019 install config file [.vsconfig](https://github.com/SJang1/Terminal-Builder/blob/master/.vsconfig). It is on date 2019.07.14 and windows version 18936.1000(20H1 Preview).
+p.s.) You can use Visual Studio 2019 install config file [vsconfig](https://github.com/SJang1/Terminal-Builder/blob/master/vsconfig). It is on date 2019.07.14 and windows version 18936.1000(20H1 Preview).
 
 ## How to do?
 First of all, Download **Make-Terminal.bat**
