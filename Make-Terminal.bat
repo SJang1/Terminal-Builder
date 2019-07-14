@@ -10,18 +10,12 @@ if "%PROCESSOR_ARCHITECTURE%" == "AMD64" (
 )
 
 :ARGS_LOOP
-if (%1) == () (
-    echo Automactlly building release
-    set _LAST_BUILD_CONF=Release
-    set Building=rel
-)
 if (%1) == (dbg) (
     echo Manually building debug
     set _LAST_BUILD_CONF=Debug
     set Building=dbg
-)
-if (%1) == (rel) (
-    echo Manually building release
+) else (
+    echo Building release
     set _LAST_BUILD_CONF=Release
     set Building=rel
 )
