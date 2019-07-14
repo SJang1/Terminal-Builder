@@ -49,16 +49,17 @@ git submodule update --init --recursive
 echo.
 echo Open OpenConsole.sln with VS2019, Install the following workloads which VS prompt you to install it before you continue.
 echo If you already did this, Skip it!
+echo ...and continue will kill Windows Terminal.
 pause
 
+taskkill /F /IM WindowsTerminal.exe
 @echo on
 call .\tools\razzle.cmd %Building%
 call .\tools\bcz.cmd %Building%
 @echo off
 
-
-:choice_shortcut
 cls
+:choice_shortcut
 set /P c=Do you want to make a shortcut on desktop[Y/N]?
 if /I "%c%" EQU "Y" goto :short
 if /I "%c%" EQU "N" goto :pass_short
