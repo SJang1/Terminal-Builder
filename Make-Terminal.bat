@@ -63,6 +63,7 @@ cls
 set /P c=Do you want to make a shortcut on desktop[Y/N]?
 if /I "%c%" EQU "Y" goto :short
 if /I "%c%" EQU "N" goto :pass_short
+echo ooops! Please choose between Y or N
 goto :choice_shortcut
 
 :short
