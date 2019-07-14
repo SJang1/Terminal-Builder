@@ -57,6 +57,7 @@ taskkill /F /IM WindowsTerminal.exe
 call .\tools\razzle.cmd %Building%
 call .\tools\bcz.cmd %Building%
 @echo off
+pause
 
 cls
 :choice_shortcut
