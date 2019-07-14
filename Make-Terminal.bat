@@ -56,8 +56,9 @@ call .\tools\razzle.cmd %Building%
 call .\tools\bcz.cmd %Building%
 @echo off
 
-cls
+
 :choice_shortcut
+cls
 set /P c=Do you want to make a shortcut on desktop[Y/N]?
 if /I "%c%" EQU "Y" goto :short
 if /I "%c%" EQU "N" goto :pass_short
