@@ -2,6 +2,8 @@
 Windows Terminal builder builds [windows terminal](https://github.com/microsoft/terminal) (semi)automatically.
 
 ## Prerequirements
+[Git for Windows](https://git-scm.com/downloads/win)
+
 All of the [Prerequirements on Windows Terminal](https://github.com/microsoft/terminal/blob/master/README.md#build-prerequisites)
 
 ..But I'll notify you when to do this : Opening the solution will [prompt you to install missing components automatically](https://devblogs.microsoft.com/setup/configure-visual-studio-across-your-organization-with-vsconfig/).
