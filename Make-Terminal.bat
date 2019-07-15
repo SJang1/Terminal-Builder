@@ -57,6 +57,11 @@ taskkill /F /IM WindowsTerminal.exe
 call .\tools\razzle.cmd %Building%
 call .\tools\bcz.cmd %Building%
 @echo off
+set BUILD_STATUS=%ERRORLEVEL%
+echo.
+echo.
+if %BUILD_STATUS%==0 echo Build success
+if not %BUILD_STATUS%==0  echo Build failed
 pause
 
 cls
