@@ -60,9 +60,14 @@ call .\tools\bcz.cmd %Building%
 set BUILD_STATUS=%ERRORLEVEL%
 echo.
 echo.
-if %BUILD_STATUS%==0 echo Build success
-if not %BUILD_STATUS%==0  echo Build failed
-pause
+if %BUILD_STATUS%==0 (
+    echo Build success
+    pause
+)
+if not %BUILD_STATUS%==0 (
+    echo Build failed
+    goto :exit
+)
 
 cls
 :choice_shortcut
