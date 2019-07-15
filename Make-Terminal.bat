@@ -1,4 +1,123 @@
+@::!/dos/rocks
 @echo off
+goto :init
+
+
+rem https://stackoverflow.com/a/45070967
+:header
+    echo Windows Terminal Auto Builder
+    echo.
+    goto :eof
+
+:usage
+    echo USAGE:
+    echo   %__BAT_NAME% [flags] "required argument" "optional argument" 
+    echo.
+    echo.  /?, --help           shows this help
+    echo.  /v, --version        shows the version
+    echo.  -d, --dir value      specifies a directory to install
+    echo.  /t, -t, --type       Value can be R to Release, D to Debug
+    goto :eof
+
+:version
+    if "%~1"=="full" call :header & goto :eof
+    echo %__VERSION%
+    goto :eof
+
+:missing_argument
+    call :header
+    call :usage
+    echo.
+    echo ****                                   ****
+    echo ****    MISSING "REQUIRED ARGUMENT"    ****
+    echo ****                                   ****
+    echo.
+    goto :eof
+
+:init
+    set "__NAME=%~n0"
+    set "__VERSION=20190715"
+    set "__YEAR=2019"
+
+    set "__BAT_FILE=%~0"
+    set "__BAT_PATH=%~dp0"
+    set "__BAT_NAME=%~nx0"
+
+    set "OptHelp="
+    set "OptVersion="
+    set "OptVerbose="
+
+    set "UnNamedArgument="
+    set "UnNamedOptionalArg="
+    set "NamedFlag="
+    
+    set "Directory_to_inst="
+    set "Inst_Type="
+
+:parse
+    if "%~1"=="" goto :validate
+
+    if /i "%~1"=="/?"         call :header & call :usage "%~2" & goto :end
+    if /i "%~1"=="-?"         call :header & call :usage "%~2" & goto :end
+    if /i "%~1"=="--help"     call :header & call :usage "%~2" & goto :end
+
+    if /i "%~1"=="/v"         call :version      & goto :end
+    if /i "%~1"=="-v"         call :version      & goto :end
+    if /i "%~1"=="--version"  call :version full & goto :end
+
+    
+    if /i "%~1"=="-d"     set "Directory_to_inst=%~2"   & shift & shift & goto :parse
+    if /i "%~1"=="--dir"     set "Directory_to_inst=%~2"   & shift & shift & goto :parse
+    
+    if /i "%~1"=="/t"     set "Inst_Type=%~2"   & shift & shift & goto :parse
+    if /i "%~1"=="--t"     set "Inst_Type=%~2"   & shift & shift & goto :parse
+    if /i "%~1"=="--type"     set "Inst_Type=%~2"   & shift & shift & goto :parse
+
+    if not defined UnNamedArgument     set "UnNamedArgument=%~1"     & shift & goto :parse
+    if not defined UnNamedOptionalArg  set "UnNamedOptionalArg=%~1"  & shift & goto :parse
+
+    shift
+    goto :parse
+
+:validate
+    if not defined UnNamedArgument call :missing_argument & goto :end
+
+:main
+
+    if defined Directory_to_inst               echo Directory to install:          %Directory_to_inst%\terminal
+    if not defined Directory_to_inst (
+        set Directory_to_inst="C:\"
+        echo Directory_to_install:          C:\terminal
+    )           
+    rem Directory to install : %Directory_to_inst%
+    
+    
+    if defined Inst_Type (
+        if %Inst_Type%=="D"(
+         (
+            echo Manually building debug
+            set _LAST_BUILD_CONF=Debug
+            set Building=dbg
+        ) else if %Inst_Type%=="R"(
+         (
+            echo Manually building Release
+            set _LAST_BUILD_CONF=Release
+            set Building=rel
+        ) else (
+            echo Install type not not definded,
+            echo Manually building Release
+            set _LAST_BUILD_CONF=Release
+            set Building=rel
+        )
+    )
+    
+    if not defined Inst_Type (
+    echo Building Release
+    set _LAST_BUILD_CONF=Release
+    set Building=rel
+    )
+shift
+
 
 :get_arch
 if "%PROCESSOR_ARCHITECTURE%" == "AMD64" (
@@ -9,20 +128,8 @@ if "%PROCESSOR_ARCHITECTURE%" == "AMD64" (
     set PLATFORM=Win32
 )
 
-:ARGS_LOOP
-if (%1) == (dbg) (
-    echo Manually building debug
-    set _LAST_BUILD_CONF=Debug
-    set Building=dbg
-) else (
-    echo Building release
-    set _LAST_BUILD_CONF=Release
-    set Building=rel
-)
-shift
-
 :updateGit
-cd "C:\"
+cd %Directory_to_inst%
 
 rem check if terminal exist and update it
 IF EXIST terminal\.git (
@@ -51,6 +158,7 @@ taskkill /F /IM WindowsTerminal.exe
 call .\tools\razzle.cmd %Building%
 call .\tools\bcz.cmd %Building%
 @echo off
+set _root_path_terminal=%~dp0
 pause
 
 cls
@@ -62,7 +170,7 @@ echo ooops! Please choose between Y or N
 goto :choice_shortcut
 
 :short
-rem C:\terminal\src\cascadia\CascadiaPackage\bin\x64\Release\WindowsTerminal.exe
+rem %_root_path_terminal%\src\cascadia\CascadiaPackage\bin\x64\Release\WindowsTerminal.exe
 @echo off
 echo Set oWS = WScript.CreateObject("WScript.Shell") > CreateShortcut.vbs
 if "%Building%" == "rel" (
@@ -71,7 +179,7 @@ echo sLinkFile = "%HOMEDRIVE%%HOMEPATH%\Desktop\Terminal.lnk" >> CreateShortcut.
 echo sLinkFile = "%HOMEDRIVE%%HOMEPATH%\Desktop\Terminal-Debug.lnk" >> CreateShortcut.vbs
 )
 echo Set oLink = oWS.CreateShortcut(sLinkFile) >> CreateShortcut.vbs
-echo oLink.TargetPath = "C:\terminal\src\cascadia\CascadiaPackage\bin\%ARCH%\%_LAST_BUILD_CONF%\WindowsTerminal.exe" >> CreateShortcut.vbs
+echo oLink.TargetPath = "%_root_path_terminal%\src\cascadia\CascadiaPackage\bin\%ARCH%\%_LAST_BUILD_CONF%\WindowsTerminal.exe" >> CreateShortcut.vbs
 echo oLink.Save >> CreateShortcut.vbs
 cscript CreateShortcut.vbs
 del CreateShortcut.vbs
@@ -89,9 +197,9 @@ echo Done!
 IF "%shortcut_exist%" == "yes" (
     echo You can run Terminal by desktop shortcut
     echo ... or ...
-    echo "C:\terminal\src\cascadia\CascadiaPackage\bin\%ARCH%\%_LAST_BUILD_CONF%\WindowsTerminal.exe"
+    echo "%_root_path_terminal%\src\cascadia\CascadiaPackage\bin\%ARCH%\%_LAST_BUILD_CONF%\WindowsTerminal.exe"
 ) ELSE IF "%shortcut_exist%" == "no" (
-    echo You can run Terminal at "C:\terminal\src\cascadia\CascadiaPackage\bin\%ARCH%\%_LAST_BUILD_CONF%\WindowsTerminal.exe"
+    echo You can run Terminal at "%_root_path_terminal%\src\cascadia\CascadiaPackage\bin\%ARCH%\%_LAST_BUILD_CONF%\WindowsTerminal.exe"
 )
 
 :exit
@@ -99,4 +207,29 @@ echo.
 echo.
 echo press any key to exit
 pause >nul
-exit
+call :cleanup
+exit /B
+
+:cleanup
+    REM The cleanup function is only really necessary if you
+    REM are _not_ using SETLOCAL.
+    set "__NAME="
+    set "__VERSION="
+    set "__YEAR="
+
+    set "__BAT_FILE="
+    set "__BAT_PATH="
+    set "__BAT_NAME="
+
+    set "OptHelp="
+    set "OptVersion="
+    set "OptVerbose="
+
+    set "UnNamedArgument="
+    set "UnNamedArgument2="
+    set "NamedFlag="
+    
+    set "Directory_to_inst="
+    set "Inst_Type="
+
+    goto :eof
