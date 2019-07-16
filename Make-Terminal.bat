@@ -15,7 +15,7 @@ rem https://stackoverflow.com/a/45070967
     echo.
     echo.  /?, --help           shows this help
     echo.  /v, --version        shows the version
-    echo.  -d, --dir value      specifies a directory to install
+    echo.  --dir value          specifies a directory to install
     echo.  /t, -t, --type       Value can be R to Release, D to Debug
     goto :eof
 
@@ -54,6 +54,14 @@ rem https://stackoverflow.com/a/45070967
     set "Directory_to_inst="
     set "Inst_Type="
 
+:set_debug
+
+    echo Manually building debug
+    set _LAST_BUILD_CONF=Debug
+    set Building=dbg
+
+    goto :eof
+
 :parse
     if "%~1"=="" goto :validate
 
@@ -66,13 +74,11 @@ rem https://stackoverflow.com/a/45070967
     if /i "%~1"=="--version"  call :version full & goto :end
 
     
-    if /i "%~1"=="-d"     set "Directory_to_inst=%~2"   & shift & shift & goto :parse
+    
     if /i "%~1"=="--dir"     set "Directory_to_inst=%~2"   & shift & shift & goto :parse
     
-    if /i "%~1"=="/t"     set "Inst_Type=%~2"   & shift & shift & goto :parse
-    if /i "%~1"=="--t"     set "Inst_Type=%~2"   & shift & shift & goto :parse
-    if /i "%~1"=="--type"     set "Inst_Type=%~2"   & shift & shift & goto :parse
-
+    if /i "%~1"=="/D"        set "Inst_Type=D" & shift & shift & call :set_debug & goto :parse
+    
     if not defined UnNamedArgument     set "UnNamedArgument=%~1"     & shift & goto :parse
     if not defined UnNamedOptionalArg  set "UnNamedOptionalArg=%~1"  & shift & goto :parse
 
@@ -91,25 +97,6 @@ rem https://stackoverflow.com/a/45070967
     )           
     rem Directory to install : %Directory_to_inst%
     
-    
-    if defined Inst_Type (
-        if %Inst_Type%=="D"(
-         (
-            echo Manually building debug
-            set _LAST_BUILD_CONF=Debug
-            set Building=dbg
-        ) else if %Inst_Type%=="R"(
-         (
-            echo Manually building Release
-            set _LAST_BUILD_CONF=Release
-            set Building=rel
-        ) else (
-            echo Install type not not definded,
-            echo Manually building Release
-            set _LAST_BUILD_CONF=Release
-            set Building=rel
-        )
-    )
     
     if not defined Inst_Type (
     echo Building Release
