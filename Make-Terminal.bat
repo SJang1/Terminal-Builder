@@ -24,6 +24,15 @@ rem https://stackoverflow.com/a/45070967
     echo %__VERSION%
     goto :eof
 
+:set_debug
+
+    echo Manually building debug
+    set _LAST_BUILD_CONF=Debug
+    set Building=dbg
+
+    goto :eof
+    
+   
 :missing_argument
     call :header
     call :usage
@@ -54,13 +63,7 @@ rem https://stackoverflow.com/a/45070967
     set "Directory_to_inst="
     set "Inst_Type="
 
-:set_debug
 
-    echo Manually building debug
-    set _LAST_BUILD_CONF=Debug
-    set Building=dbg
-
-    goto :eof
 
 :parse
     if "%~1"=="" goto :validate
