@@ -85,7 +85,7 @@ rem https://stackoverflow.com/a/45070967
     if /i "%~1"=="/D"        set "Inst_Type=D" & call :set_debug & shift & shift & call :set_debug & goto :parse
     if /i "%~1"=="/R"        set "Inst_Type=R" & call :set_release & shift & shift & call :set_debug & goto :parse
     
-    if not defined UnNamedArgument     set "UnNamedArgument=%~1"     & shift & goto :parse
+    if not defined Inst_Type           set "Inst_Type=R"             & call :set_release & shift & goto :parse
     if not defined UnNamedArgument     set "UnNamedArgument=%~1"     & shift & goto :parse
     if not defined UnNamedOptionalArg  set "UnNamedOptionalArg=%~1"  & shift & goto :parse
 
