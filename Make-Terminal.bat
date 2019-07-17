@@ -86,6 +86,7 @@ rem https://stackoverflow.com/a/45070967
     if /i "%~1"=="/R"        set "Inst_Type=R" & call :set_release & shift & shift & call :set_debug & goto :parse
     
     if not defined UnNamedArgument     set "UnNamedArgument=%~1"     & shift & goto :parse
+    if not defined UnNamedArgument     set "UnNamedArgument=%~1"     & shift & goto :parse
     if not defined UnNamedOptionalArg  set "UnNamedOptionalArg=%~1"  & shift & goto :parse
 
     shift
@@ -137,6 +138,44 @@ echo Open OpenConsole.sln with VS2019, Install the following workloads which VS 
 echo If you already did this, Skip it!
 echo ...and continue will kill Windows Terminal.
 pause
+
+
+taskkill /F /IM WindowsTerminal.exe
+@echo on
+call .\tools\razzle.cmd %Building%
+call .\tools\bcz.cmd %Building%
+@echo off
+pause
+
+cls
+:choice_shortcut
+set /P c=Do you want to make a shortcut on desktop[Y/N]?
+if /I "%c%" EQU "Y" goto :short
+if /I "%c%" EQU "N" goto :pass_short
+echo ooops! Please choose between Y or N
+goto :choice_shortcut
+
+:short
+rem C:\terminal\src\cascadia\CascadiaPackage\bin\x64\Release\WindowsTerminal.exe
+@echo off
+echo Set oWS = WScript.CreateObject("WScript.Shell") > CreateShortcut.vbs
+if "%Building%" == "rel" (
+echo sLinkFile = "%HOMEDRIVE%%HOMEPATH%\Desktop\Terminal.lnk" >> CreateShortcut.vbs
+) else if "%Building%" == "dbg" (
+echo sLinkFile = "%HOMEDRIVE%%HOMEPATH%\Desktop\Terminal-Debug.lnk" >> CreateShortcut.vbs
+)
+echo Set oLink = oWS.CreateShortcut(sLinkFile) >> CreateShortcut.vbs
+echo oLink.TargetPath = "C:\terminal\src\cascadia\CascadiaPackage\bin\%ARCH%\%_LAST_BUILD_CONF%\WindowsTerminal.exe" >> CreateShortcut.vbs
+echo oLink.Save >> CreateShortcut.vbs
+cscript CreateShortcut.vbs
+del CreateShortcut.vbs
+set shortcut_exist=yes
+goto :end
+
+
+:pass_short
+echo passing Making Shrotcut
+set shortcut_exist=no
 
 :end
 
