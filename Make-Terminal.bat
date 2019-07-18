@@ -103,7 +103,6 @@ rem https://stackoverflow.com/a/45070967
     if /i "%Inst_Type%"==""    call :set_release & shift & shift & goto :parse
     
     if defined Directory_to_inst (
-        set Directory_to_inst_noend=%Directory_to_inst%
         echo Directory to install: %Directory_to_inst%\terminal
     )
     if not defined Directory_to_inst (
