@@ -52,7 +52,7 @@ rem https://stackoverflow.com/a/45070967
 
 :init
     set "__NAME=%~n0"
-    set "__VERSION=20190715"
+    set "__VERSION=20190718"
     set "__YEAR=2019"
 
     set "__BAT_FILE=%~0"
@@ -164,7 +164,6 @@ taskkill /F /IM WindowsTerminal.exe
 call .\tools\razzle.cmd %Building%
 call .\tools\bcz.cmd %Building%
 @echo off
-set _root_path_terminal=%~dp0
 pause
 
 cls
