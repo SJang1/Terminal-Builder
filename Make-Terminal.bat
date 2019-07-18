@@ -214,31 +214,4 @@ echo.
 echo.
 echo press any key to exit
 pause >nul
-call :cleanup
-goto :eof
-
-:cleanup
-    REM The cleanup function is only really necessary if you
-    REM are _not_ using SETLOCAL.
-    set "__NAME="
-    set "__VERSION="
-    set "__YEAR="
-
-    set "__BAT_FILE="
-    set "__BAT_PATH="
-    set "__BAT_NAME="
-
-    set "OptHelp="
-    set "OptVersion="
-    set "OptVerbose="
-
-    set "UnNamedArgument="
-    set "UnNamedArgument2="
-    set "NamedFlag="
-    
-    set "Directory_to_inst="
-    set "Inst_Type="
-
-    goto :eof
-
-:eof
+exit
