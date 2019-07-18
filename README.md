@@ -14,7 +14,7 @@ p.s.) You can use Visual Studio 2019 install config file [vsconfig](https://gith
 First of all, Download **Make-Terminal.bat**
 * run **Make-Terminal.bat** to build Release.
 * run **Make-Terminal.bat /D** to build Debug.
-* use **--dir Directory** to make terminal on other folder. **Important! Do not put \ on the end of directory.**
+* use **--dir Directory** to make terminal not on C:\terminal.
 
 After all of progress, source is under C:\terminal or (Your-choice)\terminal and batch file will tell you the exe file path.
 
