@@ -15,7 +15,7 @@ rem https://stackoverflow.com/a/45070967
     echo.
     echo.  /?, --help           shows this help
     echo.  /v, --version        shows the version
-    echo.  -d, --dir value      specifies a directory to install
+    echo.  --dir value          specifies a directory to install
     echo.  /D                   Build as Debug 
     echo.  /R                   Build as Release
     goto :eof
@@ -82,7 +82,6 @@ rem https://stackoverflow.com/a/45070967
     if /i "%~1"=="--version"  call :version      & goto :end
 
     
-    if /i "%~1"=="-d"     set "Directory_to_inst=%~2"   & shift & shift & goto :parse
     if /i "%~1"=="--dir"     set "Directory_to_inst=%~2"   & shift & shift & goto :parse
     
     if /i "%~1"=="/D"        call :set_debug   & shift & shift & goto :parse
