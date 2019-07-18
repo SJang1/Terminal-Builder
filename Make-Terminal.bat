@@ -108,6 +108,7 @@ rem https://stackoverflow.com/a/45070967
     )
     if not defined Directory_to_inst (
         set Directory_to_inst="C:\"
+        set Directory_to_inst_noend=C:
         echo Directory_to_install:          C:\terminal
     ) 
     echo.
@@ -184,7 +185,7 @@ echo sLinkFile = "%HOMEDRIVE%%HOMEPATH%\Desktop\Terminal.lnk" >> CreateShortcut.
 echo sLinkFile = "%HOMEDRIVE%%HOMEPATH%\Desktop\Terminal-Debug.lnk" >> CreateShortcut.vbs
 )
 echo Set oLink = oWS.CreateShortcut(sLinkFile) >> CreateShortcut.vbs
-echo oLink.TargetPath = "%Directory_to_inst%\terminal\src\cascadia\CascadiaPackage\bin\%ARCH%\%_LAST_BUILD_CONF%\WindowsTerminal.exe" >> CreateShortcut.vbs
+echo oLink.TargetPath = "%Directory_to_inst_noend%\terminal\src\cascadia\CascadiaPackage\bin\%ARCH%\%_LAST_BUILD_CONF%\WindowsTerminal.exe" >> CreateShortcut.vbs
 echo oLink.Save >> CreateShortcut.vbs
 cscript CreateShortcut.vbs
 del CreateShortcut.vbs
@@ -195,6 +196,7 @@ goto :end
 :pass_short
 echo passing Making Shrotcut
 set shortcut_exist=no
+goto :end
 
 :end
 cls
@@ -202,9 +204,9 @@ echo Done!
 IF "%shortcut_exist%" == "yes" (
     echo You can run Terminal by desktop shortcut
     echo ... or ...
-    echo "%Directory_to_inst%\terminal\src\cascadia\CascadiaPackage\bin\%ARCH%\%_LAST_BUILD_CONF%\WindowsTerminal.exe"
+    echo "%Directory_to_inst_noend%\terminal\src\cascadia\CascadiaPackage\bin\%ARCH%\%_LAST_BUILD_CONF%\WindowsTerminal.exe"
 ) ELSE IF "%shortcut_exist%" == "no" (
-    echo You can run Terminal at "%Directory_to_inst%\terminal\src\cascadia\CascadiaPackage\bin\%ARCH%\%_LAST_BUILD_CONF%\WindowsTerminal.exe"
+    echo You can run Terminal at "%Directory_to_inst_noend%\terminal\src\cascadia\CascadiaPackage\bin\%ARCH%\%_LAST_BUILD_CONF%\WindowsTerminal.exe"
 )
 
 :exit
