@@ -68,6 +68,7 @@ rem https://stackoverflow.com/a/45070967
     set "NamedFlag="
     
     set "Directory_to_inst="
+    set "Git_to_clone=https://github.com/microsoft/terminal.git"
     set "Inst_Type="
 
 :parse
@@ -83,6 +84,8 @@ rem https://stackoverflow.com/a/45070967
 
     
     if /i "%~1"=="--dir"     set "Directory_to_inst=%~2"   & shift & shift & goto :parse
+
+    if /i "%~1"=="--git"     set "Git_to_clone=%~2"   & shift & shift & goto :parse
     
     if /i "%~1"=="/D"        call :set_debug   & shift & shift & goto :parse
     if /i "%~1"=="/R"        call :set_release & shift & shift & goto :parse
@@ -109,6 +112,13 @@ rem https://stackoverflow.com/a/45070967
         set Directory_to_inst="C:\"
         echo Directory_to_install:          C:\terminal
     ) 
+    echo git to clone: %Git_to_clone%
+    if /i "%Git_to_clone%"=="https://github.com/microsoft/terminal.git" (
+        rem No-Problem
+    ) else (
+        echo.
+        echo git name MUST BE terminal to use this script.
+    )
     echo.
     pause
     rem Directory to install : %Directory_to_inst%
@@ -143,7 +153,7 @@ git pull
     IF EXIST terminal (
     rmdir /s terminal
     )
-git clone https://github.com/microsoft/terminal.git
+git clone %Git_to_clone%
 cd terminal
 )
 
