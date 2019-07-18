@@ -22,3 +22,5 @@ After all of progress, source is under C:\terminal or (Your-choice)\terminal and
 
 ## Update?
 It will update Terminal if it exists. When updating, you can't use windows terminal.
+
+This script will not be updating automatically.
