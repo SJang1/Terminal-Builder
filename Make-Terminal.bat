@@ -65,7 +65,7 @@ rem https://stackoverflow.com/a/45070967
     set "NamedFlag="
     
     set "Directory_to_inst="
-    set "Inst_Type="
+    rem set "Inst_Type="
 
 :parse
     if "%~1"=="" goto :validate
