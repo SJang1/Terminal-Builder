@@ -82,8 +82,8 @@ rem https://stackoverflow.com/a/45070967
     
     if /i "%~1"=="--dir"     set "Directory_to_inst=%~2"   & shift & shift & goto :parse
     
-    if /i "%~1"=="/D"        set "Inst_Type=D" & call :set_debug & shift & shift & call :set_debug & goto :parse
-    if /i "%~1"=="/R"        set "Inst_Type=R" & call :set_release & shift & shift & call :set_debug & goto :parse
+    if /i "%~1"=="/D"        set "Inst_Type=D" & call :set_debug & shift & shift & goto :parse
+    if /i "%~1"=="/R"        set "Inst_Type=R" & call :set_release & shift & shift & goto :parse
     
     if not defined Inst_Type           set "Inst_Type=R"             & call :set_release & shift & goto :parse
     if not defined UnNamedArgument     set "UnNamedArgument=%~1"     & shift & goto :parse
