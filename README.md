@@ -12,7 +12,7 @@ First of all, Download **Make-Terminal.bat**
 * run **Make-Terminal.bat** to build Release.
 * run **Make-Terminal.bat /D** to build Debug.
 * use **--dir Directory** to make terminal not on C:\terminal.
-* use **--git git-URL** for not to use [Microsoft/terminal master](https://github.com/microsoft/terminal/tree/master) git.
+* use **--git git-URL** for not to use [Microsoft/terminal](https://github.com/microsoft/terminal) git.
 
 After all of progress, source is under C:\terminal or (Your-choice)\terminal and batch file will tell you the exe file path.
 
