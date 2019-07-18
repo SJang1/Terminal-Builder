@@ -126,6 +126,13 @@ if "%PROCESSOR_ARCHITECTURE%" == "AMD64" (
     set PLATFORM=Win32
 )
 
+:makePath
+rem make path if not exist
+IF NOT EXIST %Directory_to_inst% (
+    mkdir %Directory_to_inst%
+)
+
+
 :updateGit
 cd %Directory_to_inst%
 
@@ -168,7 +175,7 @@ echo ooops! Please choose between Y or N
 goto :choice_shortcut
 
 :short
-rem %_root_path_terminal%\src\cascadia\CascadiaPackage\bin\x64\Release\WindowsTerminal.exe
+rem %Directory_to_inst%\terminal\src\cascadia\CascadiaPackage\bin\x64\Release\WindowsTerminal.exe
 @echo off
 echo Set oWS = WScript.CreateObject("WScript.Shell") > CreateShortcut.vbs
 if "%Building%" == "rel" (
@@ -177,7 +184,7 @@ echo sLinkFile = "%HOMEDRIVE%%HOMEPATH%\Desktop\Terminal.lnk" >> CreateShortcut.
 echo sLinkFile = "%HOMEDRIVE%%HOMEPATH%\Desktop\Terminal-Debug.lnk" >> CreateShortcut.vbs
 )
 echo Set oLink = oWS.CreateShortcut(sLinkFile) >> CreateShortcut.vbs
-echo oLink.TargetPath = "%_root_path_terminal%\src\cascadia\CascadiaPackage\bin\%ARCH%\%_LAST_BUILD_CONF%\WindowsTerminal.exe" >> CreateShortcut.vbs
+echo oLink.TargetPath = "%Directory_to_inst%\terminal\src\cascadia\CascadiaPackage\bin\%ARCH%\%_LAST_BUILD_CONF%\WindowsTerminal.exe" >> CreateShortcut.vbs
 echo oLink.Save >> CreateShortcut.vbs
 cscript CreateShortcut.vbs
 del CreateShortcut.vbs
@@ -195,9 +202,9 @@ echo Done!
 IF "%shortcut_exist%" == "yes" (
     echo You can run Terminal by desktop shortcut
     echo ... or ...
-    echo "%_root_path_terminal%\src\cascadia\CascadiaPackage\bin\%ARCH%\%_LAST_BUILD_CONF%\WindowsTerminal.exe"
+    echo "%Directory_to_inst%\terminal\src\cascadia\CascadiaPackage\bin\%ARCH%\%_LAST_BUILD_CONF%\WindowsTerminal.exe"
 ) ELSE IF "%shortcut_exist%" == "no" (
-    echo You can run Terminal at "%_root_path_terminal%\src\cascadia\CascadiaPackage\bin\%ARCH%\%_LAST_BUILD_CONF%\WindowsTerminal.exe"
+    echo You can run Terminal at "%Directory_to_inst%\terminal\src\cascadia\CascadiaPackage\bin\%ARCH%\%_LAST_BUILD_CONF%\WindowsTerminal.exe"
 )
 
 :exit
@@ -206,7 +213,7 @@ echo.
 echo press any key to exit
 pause >nul
 call :cleanup
-exit /B
+goto :eof
 
 :cleanup
     REM The cleanup function is only really necessary if you
@@ -231,3 +238,5 @@ exit /B
     set "Inst_Type="
 
     goto :eof
+
+:eof
