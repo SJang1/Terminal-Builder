@@ -65,7 +65,7 @@ rem https://stackoverflow.com/a/45070967
     set "NamedFlag="
     
     set "Directory_to_inst="
-    rem set "Inst_Type="
+    set "Inst_Type=R" & call :set_release & shift
 
 :parse
     if "%~1"=="" goto :validate
@@ -85,7 +85,6 @@ rem https://stackoverflow.com/a/45070967
     if /i "%~1"=="/D"        set "Inst_Type=D" & call :set_debug & shift & shift & goto :parse
     if /i "%~1"=="/R"        set "Inst_Type=R" & call :set_release & shift & shift & goto :parse
     
-    if not defined Inst_Type           set "Inst_Type=R"             & call :set_release & shift & goto :parse
     if not defined UnNamedArgument     set "UnNamedArgument=%~1"     & shift & goto :parse
     if not defined UnNamedOptionalArg  set "UnNamedOptionalArg=%~1"  & shift & goto :parse
 
