@@ -23,6 +23,7 @@ After all of progress, source is under C:\terminal and batch file will tell you 
 
 ## Update?
 It will update Terminal if it exists. When updating, you can't use windows terminal.
+This script will not be updating automatically.
 
 ## FAQ
 Can I fix the path? => Not yet, Probley later. It has a small problem for it. ~~I am too lazy to fix it~~
