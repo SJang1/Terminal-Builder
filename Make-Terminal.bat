@@ -15,8 +15,9 @@ rem https://stackoverflow.com/a/45070967
     echo.
     echo.  /?, --help           shows this help
     echo.  /v, --version        shows the version
-    echo.  --dir value          specifies a directory to install
-    echo.  /t, -t, --type       Value can be R to Release, D to Debug
+    echo.  -d, --dir value      specifies a directory to install
+    echo.  /D                   Build as Debug 
+    echo.  /R                   Build as Release
     goto :eof
 
 :version
@@ -39,12 +40,14 @@ rem https://stackoverflow.com/a/45070967
     echo Manually building debug
     set _LAST_BUILD_CONF=Debug
     set Building=dbg
+    set Inst_Type=D
     goto :parse
 
 :set_release
     echo Building Release
     set _LAST_BUILD_CONF=Release
     set Building=rel
+    set Inst_Type=R
     goto :parse
 
 :init
@@ -65,7 +68,7 @@ rem https://stackoverflow.com/a/45070967
     set "NamedFlag="
     
     set "Directory_to_inst="
-    set "Inst_Type=R" & call :set_release & shift
+    set "Inst_Type="
 
 :parse
     if "%~1"=="" goto :validate
@@ -76,15 +79,17 @@ rem https://stackoverflow.com/a/45070967
 
     if /i "%~1"=="/v"         call :version      & goto :end
     if /i "%~1"=="-v"         call :version      & goto :end
-    if /i "%~1"=="--version"  call :version full & goto :end
+    if /i "%~1"=="--version"  call :version      & goto :end
 
     
-    
+    if /i "%~1"=="-d"     set "Directory_to_inst=%~2"   & shift & shift & goto :parse
     if /i "%~1"=="--dir"     set "Directory_to_inst=%~2"   & shift & shift & goto :parse
     
-    if /i "%~1"=="/D"        set "Inst_Type=D" & call :set_debug & shift & shift & goto :parse
-    if /i "%~1"=="/R"        set "Inst_Type=R" & call :set_release & shift & shift & goto :parse
+    if /i "%~1"=="/D"        call :set_debug   & shift & shift & goto :parse
+    if /i "%~1"=="/R"        call :set_release & shift & shift & goto :parse
     
+    
+
     if not defined UnNamedArgument     set "UnNamedArgument=%~1"     & shift & goto :parse
     if not defined UnNamedOptionalArg  set "UnNamedOptionalArg=%~1"  & shift & goto :parse
 
@@ -95,14 +100,22 @@ rem https://stackoverflow.com/a/45070967
     rem if not defined UnNamedArgument call :missing_argument & goto :end
 
 :main
-
-    if defined Directory_to_inst               echo Directory to install:          %Directory_to_inst%\terminal
+    rem if no install type definded set to release
+    if /i "%Inst_Type%"==""    call :set_release & shift & shift & goto :parse
+    
+    if defined Directory_to_inst (
+        echo Directory to install: %Directory_to_inst%\terminal
+    )
     if not defined Directory_to_inst (
         set Directory_to_inst="C:\"
         echo Directory_to_install:          C:\terminal
-    )           
+    ) 
+    echo.
+    pause
     rem Directory to install : %Directory_to_inst%
     
+shift
+
 
 :get_arch
 if "%PROCESSOR_ARCHITECTURE%" == "AMD64" (
@@ -138,12 +151,12 @@ echo If you already did this, Skip it!
 echo ...and continue will kill Windows Terminal.
 pause
 
-
 taskkill /F /IM WindowsTerminal.exe
 @echo on
 call .\tools\razzle.cmd %Building%
 call .\tools\bcz.cmd %Building%
 @echo off
+set _root_path_terminal=%~dp0
 pause
 
 cls
@@ -155,7 +168,7 @@ echo ooops! Please choose between Y or N
 goto :choice_shortcut
 
 :short
-rem C:\terminal\src\cascadia\CascadiaPackage\bin\x64\Release\WindowsTerminal.exe
+rem %_root_path_terminal%\src\cascadia\CascadiaPackage\bin\x64\Release\WindowsTerminal.exe
 @echo off
 echo Set oWS = WScript.CreateObject("WScript.Shell") > CreateShortcut.vbs
 if "%Building%" == "rel" (
@@ -164,7 +177,7 @@ echo sLinkFile = "%HOMEDRIVE%%HOMEPATH%\Desktop\Terminal.lnk" >> CreateShortcut.
 echo sLinkFile = "%HOMEDRIVE%%HOMEPATH%\Desktop\Terminal-Debug.lnk" >> CreateShortcut.vbs
 )
 echo Set oLink = oWS.CreateShortcut(sLinkFile) >> CreateShortcut.vbs
-echo oLink.TargetPath = "C:\terminal\src\cascadia\CascadiaPackage\bin\%ARCH%\%_LAST_BUILD_CONF%\WindowsTerminal.exe" >> CreateShortcut.vbs
+echo oLink.TargetPath = "%_root_path_terminal%\src\cascadia\CascadiaPackage\bin\%ARCH%\%_LAST_BUILD_CONF%\WindowsTerminal.exe" >> CreateShortcut.vbs
 echo oLink.Save >> CreateShortcut.vbs
 cscript CreateShortcut.vbs
 del CreateShortcut.vbs
@@ -177,7 +190,7 @@ echo passing Making Shrotcut
 set shortcut_exist=no
 
 :end
-
+cls
 echo Done!
 IF "%shortcut_exist%" == "yes" (
     echo You can run Terminal by desktop shortcut
