@@ -1,4 +1,130 @@
+@::!/dos/rocks
 @echo off
+goto :init
+
+
+rem https://stackoverflow.com/a/45070967
+:header
+    echo Windows Terminal Auto Builder
+    echo.
+    goto :eof
+
+:usage
+    echo USAGE:
+    echo   %__BAT_NAME% [flags] "required argument" "optional argument" 
+    echo.
+    echo.  /?, --help           shows this help
+    echo.  /v, --version        shows the version
+    echo.  --dir value          specifies a directory to install
+    echo.  /D                   Build as Debug 
+    echo.  /R                   Build as Release
+    goto :eof
+
+:version
+    if "%~1"=="full" call :header & goto :eof
+    echo %__VERSION%
+    goto :eof
+
+:missing_argument
+    call :header
+    call :usage
+    echo.
+    echo ****                                   ****
+    echo ****    MISSING "REQUIRED ARGUMENT"    ****
+    echo ****                                   ****
+    echo.
+    goto :eof
+
+:set_debug
+
+    echo Manually building debug
+    set _LAST_BUILD_CONF=Debug
+    set Building=dbg
+    set Inst_Type=D
+    goto :parse
+
+:set_release
+    echo Building Release
+    set _LAST_BUILD_CONF=Release
+    set Building=rel
+    set Inst_Type=R
+    goto :parse
+
+:init
+    set "__NAME=%~n0"
+    set "__VERSION=20190718"
+    set "__YEAR=2019"
+
+    set "__BAT_FILE=%~0"
+    set "__BAT_PATH=%~dp0"
+    set "__BAT_NAME=%~nx0"
+
+    set "OptHelp="
+    set "OptVersion="
+    set "OptVerbose="
+
+    set "UnNamedArgument="
+    set "UnNamedOptionalArg="
+    set "NamedFlag="
+    
+    set "Directory_to_inst="
+    set "Git_to_clone=https://github.com/microsoft/terminal.git"
+    set "Inst_Type="
+
+:parse
+    if "%~1"=="" goto :validate
+
+    if /i "%~1"=="/?"         call :header & call :usage "%~2" & goto :end
+    if /i "%~1"=="-?"         call :header & call :usage "%~2" & goto :end
+    if /i "%~1"=="--help"     call :header & call :usage "%~2" & goto :end
+
+    if /i "%~1"=="/v"         call :version      & goto :end
+    if /i "%~1"=="-v"         call :version      & goto :end
+    if /i "%~1"=="--version"  call :version      & goto :end
+
+    
+    if /i "%~1"=="--dir"     set "Directory_to_inst=%~2"   & shift & shift & goto :parse
+
+    if /i "%~1"=="--git"     set "Git_to_clone=%~2"   & shift & shift & goto :parse
+    
+    if /i "%~1"=="/D"        call :set_debug   & shift & shift & goto :parse
+    if /i "%~1"=="/R"        call :set_release & shift & shift & goto :parse
+    
+    
+
+    if not defined UnNamedArgument     set "UnNamedArgument=%~1"     & shift & goto :parse
+    if not defined UnNamedOptionalArg  set "UnNamedOptionalArg=%~1"  & shift & goto :parse
+
+    shift
+    goto :parse
+
+:validate
+    rem if not defined UnNamedArgument call :missing_argument & goto :end
+
+:main
+    rem if no install type definded set to release
+    if /i "%Inst_Type%"==""    call :set_release & shift & shift & goto :parse
+    
+    if defined Directory_to_inst (
+        echo Directory to install: %Directory_to_inst%\terminal
+    )
+    if not defined Directory_to_inst (
+        set Directory_to_inst="C:\"
+        echo Directory_to_install:          C:\terminal
+    ) 
+    echo git to clone: %Git_to_clone%
+    if /i "%Git_to_clone%"=="https://github.com/microsoft/terminal.git" (
+        rem No-Problem
+    ) else (
+        echo.
+        echo git name MUST BE terminal to use this script.
+    )
+    echo.
+    pause
+    rem Directory to install : %Directory_to_inst%
+    
+shift
+
 
 :get_arch
 if "%PROCESSOR_ARCHITECTURE%" == "AMD64" (
@@ -9,20 +135,15 @@ if "%PROCESSOR_ARCHITECTURE%" == "AMD64" (
     set PLATFORM=Win32
 )
 
-:ARGS_LOOP
-if (%1) == (dbg) (
-    echo Manually building debug
-    set _LAST_BUILD_CONF=Debug
-    set Building=dbg
-) else (
-    echo Building release
-    set _LAST_BUILD_CONF=Release
-    set Building=rel
+:makePath
+rem make path if not exist
+IF NOT EXIST %Directory_to_inst% (
+    mkdir %Directory_to_inst%
 )
-shift
+
 
 :updateGit
-cd "C:\"
+cd %Directory_to_inst%
 
 rem check if terminal exist and update it
 IF EXIST terminal\.git (
@@ -32,7 +153,7 @@ git pull
     IF EXIST terminal (
     rmdir /s terminal
     )
-git clone https://github.com/microsoft/terminal.git
+git clone %Git_to_clone%
 cd terminal
 )
 
@@ -53,6 +174,14 @@ call .\tools\bcz.cmd %Building%
 @echo off
 pause
 
+:set_root_path_of_terminal
+cd %Directory_to_inst%
+cd terminal
+set _terminal_ROOT_PATH_Source=%cd%
+rem %_terminal_ROOT_PATH_Source% is a terminal source root path
+echo %_terminal_ROOT_PATH_Source%
+
+
 cls
 :choice_shortcut
 set /P c=Do you want to make a shortcut on desktop[Y/N]?
@@ -62,7 +191,7 @@ echo ooops! Please choose between Y or N
 goto :choice_shortcut
 
 :short
-rem C:\terminal\src\cascadia\CascadiaPackage\bin\x64\Release\WindowsTerminal.exe
+rem %_terminal_ROOT_PATH_Source%\src\cascadia\CascadiaPackage\bin\x64\Release\WindowsTerminal.exe
 @echo off
 echo Set oWS = WScript.CreateObject("WScript.Shell") > CreateShortcut.vbs
 if "%Building%" == "rel" (
@@ -71,7 +200,7 @@ echo sLinkFile = "%HOMEDRIVE%%HOMEPATH%\Desktop\Terminal.lnk" >> CreateShortcut.
 echo sLinkFile = "%HOMEDRIVE%%HOMEPATH%\Desktop\Terminal-Debug.lnk" >> CreateShortcut.vbs
 )
 echo Set oLink = oWS.CreateShortcut(sLinkFile) >> CreateShortcut.vbs
-echo oLink.TargetPath = "C:\terminal\src\cascadia\CascadiaPackage\bin\%ARCH%\%_LAST_BUILD_CONF%\WindowsTerminal.exe" >> CreateShortcut.vbs
+echo oLink.TargetPath = "%_terminal_ROOT_PATH_Source%\src\cascadia\CascadiaPackage\bin\%ARCH%\%_LAST_BUILD_CONF%\WindowsTerminal.exe" >> CreateShortcut.vbs
 echo oLink.Save >> CreateShortcut.vbs
 cscript CreateShortcut.vbs
 del CreateShortcut.vbs
@@ -82,6 +211,7 @@ goto :end
 :pass_short
 echo passing Making Shrotcut
 set shortcut_exist=no
+goto :end
 
 :end
 cls
@@ -89,9 +219,9 @@ echo Done!
 IF "%shortcut_exist%" == "yes" (
     echo You can run Terminal by desktop shortcut
     echo ... or ...
-    echo "C:\terminal\src\cascadia\CascadiaPackage\bin\%ARCH%\%_LAST_BUILD_CONF%\WindowsTerminal.exe"
+    echo "%_terminal_ROOT_PATH_Source%\src\cascadia\CascadiaPackage\bin\%ARCH%\%_LAST_BUILD_CONF%\WindowsTerminal.exe"
 ) ELSE IF "%shortcut_exist%" == "no" (
-    echo You can run Terminal at "C:\terminal\src\cascadia\CascadiaPackage\bin\%ARCH%\%_LAST_BUILD_CONF%\WindowsTerminal.exe"
+    echo You can run Terminal at "%_terminal_ROOT_PATH_Source%\src\cascadia\CascadiaPackage\bin\%ARCH%\%_LAST_BUILD_CONF%\WindowsTerminal.exe"
 )
 
 :exit
