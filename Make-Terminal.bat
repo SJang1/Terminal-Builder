@@ -192,6 +192,7 @@ goto :choice_shortcut
 
 :short
 rem %_terminal_ROOT_PATH_Source%\src\cascadia\CascadiaPackage\bin\x64\Release\WindowsTerminal.exe
+rem %LOCALAPPDATA%\Microsoft\WindowsApps\wtd.exe
 @echo off
 echo Set oWS = WScript.CreateObject("WScript.Shell") > CreateShortcut.vbs
 if "%Building%" == "rel" (
@@ -200,7 +201,16 @@ echo sLinkFile = "%HOMEDRIVE%%HOMEPATH%\Desktop\Terminal.lnk" >> CreateShortcut.
 echo sLinkFile = "%HOMEDRIVE%%HOMEPATH%\Desktop\Terminal-Debug.lnk" >> CreateShortcut.vbs
 )
 echo Set oLink = oWS.CreateShortcut(sLinkFile) >> CreateShortcut.vbs
-echo oLink.TargetPath = "%_terminal_ROOT_PATH_Source%\src\cascadia\CascadiaPackage\bin\%ARCH%\%_LAST_BUILD_CONF%\WindowsTerminal.exe" >> CreateShortcut.vbs
+IF EXIST %LOCALAPPDATA%\Microsoft\WindowsApps\wt.exe (
+set "_TERMIANL_START_PATH=%LOCALAPPDATA%\Microsoft\WindowsApps\wt.exe"
+) ELSE IF EXIST %LOCALAPPDATA%\Microsoft\WindowsApps\wtd.exe (
+set "_TERMIANL_START_PATH=%LOCALAPPDATA%\Microsoft\WindowsApps\wtd.exe"
+) ELSE (
+echo No Terminal? :(
+del CreateShortcut.vbs
+goto :pass_short
+)
+echo oLink.TargetPath = "%_TERMIANL_START_PATH%" >> CreateShortcut.vbs
 echo oLink.Save >> CreateShortcut.vbs
 cscript CreateShortcut.vbs
 del CreateShortcut.vbs
@@ -219,9 +229,9 @@ echo Done!
 IF "%shortcut_exist%" == "yes" (
     echo You can run Terminal by desktop shortcut
     echo ... or ...
-    echo "%_terminal_ROOT_PATH_Source%\src\cascadia\CascadiaPackage\bin\%ARCH%\%_LAST_BUILD_CONF%\WindowsTerminal.exe"
+    echo "%_TERMIANL_START_PATH%"
 ) ELSE IF "%shortcut_exist%" == "no" (
-    echo You can run Terminal at "%_terminal_ROOT_PATH_Source%\src\cascadia\CascadiaPackage\bin\%ARCH%\%_LAST_BUILD_CONF%\WindowsTerminal.exe"
+    echo You can run Terminal at "%_TERMIANL_START_PATH%"
 )
 
 :exit
