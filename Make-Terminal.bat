@@ -181,6 +181,16 @@ set _terminal_ROOT_PATH_Source=%cd%
 rem %_terminal_ROOT_PATH_Source% is a terminal source root path
 echo %_terminal_ROOT_PATH_Source%
 
+IF EXIST %LOCALAPPDATA%\Microsoft\WindowsApps\wt.exe (
+set "_TERMIANL_START_PATH=%LOCALAPPDATA%\Microsoft\WindowsApps\wt.exe"
+) ELSE IF EXIST %LOCALAPPDATA%\Microsoft\WindowsApps\wtd.exe (
+set "_TERMIANL_START_PATH=%LOCALAPPDATA%\Microsoft\WindowsApps\wtd.exe"
+) ELSE (
+echo No Terminal? :(
+del CreateShortcut.vbs
+goto :pass_short
+)
+
 
 cls
 :choice_shortcut
@@ -201,15 +211,6 @@ echo sLinkFile = "%HOMEDRIVE%%HOMEPATH%\Desktop\Terminal.lnk" >> CreateShortcut.
 echo sLinkFile = "%HOMEDRIVE%%HOMEPATH%\Desktop\Terminal-Debug.lnk" >> CreateShortcut.vbs
 )
 echo Set oLink = oWS.CreateShortcut(sLinkFile) >> CreateShortcut.vbs
-IF EXIST %LOCALAPPDATA%\Microsoft\WindowsApps\wt.exe (
-set "_TERMIANL_START_PATH=%LOCALAPPDATA%\Microsoft\WindowsApps\wt.exe"
-) ELSE IF EXIST %LOCALAPPDATA%\Microsoft\WindowsApps\wtd.exe (
-set "_TERMIANL_START_PATH=%LOCALAPPDATA%\Microsoft\WindowsApps\wtd.exe"
-) ELSE (
-echo No Terminal? :(
-del CreateShortcut.vbs
-goto :pass_short
-)
 echo oLink.TargetPath = "%_TERMIANL_START_PATH%" >> CreateShortcut.vbs
 echo oLink.Save >> CreateShortcut.vbs
 cscript CreateShortcut.vbs
